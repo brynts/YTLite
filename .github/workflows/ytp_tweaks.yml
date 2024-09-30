@@ -146,10 +146,13 @@ jobs:
       - name: Inject tweaks into IPA
         run: pyzule -i ${{ github.workspace }}/youtube.ipa -o ${{ github.workspace }}/YouTubePlus_${{ inputs.tweak_version }}_Tweaks.ipa -w -u -f ${{ github.workspace }}/ytplus.deb ${{ github.workspace }}/OpenYoutubeSafariExtension.appex ${{ github.workspace }}/youpip.deb ${{ github.workspace }}/ytuhd.deb ${{ github.workspace }}/ryd.deb
 
-      - name: Upload to GitHub Releases
-        uses: softprops/action-gh-release@v2.0.1
-        with:
-          tag_name: v${{ github.run_number }}
-          name: YouTubePlus v${{ inputs.tweak_version }} + Tweaks (${{ github.run_number }})
-          files: YouTubePlus_${{ inputs.tweak_version }}_Tweaks.ipa
-          draft: true
+      - name: Upload file to Catbox
+        id: upload_catbox
+        run: |
+          UPLOAD_OUTPUT=$(pyupload upload/feather.ipa --host=catbox)
+          echo "Upload Output: $UPLOAD_OUTPUT"
+          
+          LINK=$(echo "$UPLOAD_OUTPUT" | sed -n 's/.*Your link : //p')
+          echo "Uploaded file link: $LINK"
+          
+          echo "catbox_link=$LINK" >> $GITHUB_ENV
